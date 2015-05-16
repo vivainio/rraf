@@ -1,1 +1,1 @@
-c:\opt\rust\bin\rustc rraf.rs
+C:\opt\rust\bin\cargo.exe build
