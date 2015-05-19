@@ -1,1 +1,1 @@
-C:\opt\rust\bin\cargo.exe run C:\t\tsify.git
+C:\opt\rust\bin\cargo.exe run C:\t\t2

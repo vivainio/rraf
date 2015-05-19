@@ -10,6 +10,7 @@ use std::fs::{self, PathExt, DirEntry, walk_dir, Metadata};
 use std::path::Path;
 use std::env;
 use std::os;
+use std::thread;
 
 fn to_unc_path(path: &Path) -> String {
 	let buf = path.to_str().unwrap().clone();
@@ -49,12 +50,24 @@ fn main() {
     }
 
     let uncp = to_unc_path(p);
-    nuke_tree(&uncp);
+    let mut counter = 10;
+    loop {
+        let ok = nuke_tree(&uncp);
+        if ok {
+            break;
+        }
+        counter = counter-1;
+        if counter == 0 {
+            break;
+        }
+        thread::sleep_ms(2000);
+    }
+    
 }
 
-fn nuke_tree(root: &str) {
+fn nuke_tree(root: &str) -> bool {
     let walker = walk_dir(root).unwrap();
-    let mut to_retry: Vec<String> = Vec::new(); 
+    let mut failed_files = 0;
     for w in walker {
     	let ent = w.unwrap();
     	let md = ent.metadata().unwrap();
@@ -63,20 +76,25 @@ fn nuke_tree(root: &str) {
  			println!("F: {:?}", path );
             let r = remove_file(&path, &md);
             if r.is_err() {
-                to_retry.push(String::from_str(path.to_str().unwrap()));
+                failed_files += 1;
             }
 
 		} else if md.is_dir() {
 			println!("D: {:?}", path );
 		}
 
-    	//println!("Path: {}", path);
+    }    
+    if failed_files > 0 {
+        println!("Failed files: {}", failed_files);
+        return false;
     }
-    if to_retry.len() > 0 {
-    	println!("To retry: {}", to_retry.len());
-    } else {
-    	let r = fs::remove_dir_all(root);
+    let r = fs::remove_dir_all(root);
+    if !r.is_err() {
+        return true;
     }
+
+    return false;
+
 }
 
 
