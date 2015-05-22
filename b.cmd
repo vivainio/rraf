@@ -1,1 +1,1 @@
-C:\opt\rust\bin\cargo.exe run t
+C:\opt\rust\bin\cargo.exe run ..\rraf\t

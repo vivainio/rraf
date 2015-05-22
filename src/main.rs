@@ -65,23 +65,14 @@ fn abspath(path: &Path) -> PathBuf {
 fn main() {
     let args: Vec<String> = env::args().collect();
     let p = Path::new(&args[1]);
-    let ap = abspath(&p);
-    println!("Absopath ({:?})", ap );
+    let apb = abspath(&p);
+    let ap = apb.as_path();
     
-    if !p.is_absolute() {
-    	let cwd = env::current_dir();
-
-        panic!("rraf: You must specify absolute path name!");
-
-
-    }
-
-    if !p.is_dir() {
+    if !ap.is_dir() {
     	panic!("rraf: You must specify existing directory name!");
 
     }
-
-    let uncp = to_unc_path(p);
+    let uncp = to_unc_path(ap);
     let mut counter = 10;
     loop {
         let ok = nuke_tree(&uncp);
