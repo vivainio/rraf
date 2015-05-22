@@ -3,3 +3,8 @@
 name = "rraf"
 version = "0.0.1"
 authors = [ "vivainio@gmail.com" ]
+license = "MIT"
+description = "Rust port of Rimraf"
+homepage="https://github.com/vivainio/rraf"
+
+
