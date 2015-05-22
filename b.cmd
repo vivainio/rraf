@@ -1,1 +1,1 @@
-C:\opt\rust\bin\cargo.exe run C:\t\t2
+C:\opt\rust\bin\cargo.exe run t
