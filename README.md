@@ -5,7 +5,7 @@ The Rimraf utility, written in Node (https://github.com/isaacs/rimraf), is a han
 Rimraf has the problem that it depends on Nodejs, which can be unacceptable in many environments. Furthermore, 
 rimraf (and obviously nodejs itself) sprinkle unwanted files around the file system.
 
-rraf, a stanalone rust "port" of rimraf, is a single statically linked .exe file built in Rust, so you can drop it anywhere.
+rraf, a stanalone Rust "port" of rimraf, is a single statically linked .exe file, so you can drop it anywhere.
 
 It only works in Windows, as *nix based operating systems don't have problems with the poweruser scenarios of removing 
 files from disk.
