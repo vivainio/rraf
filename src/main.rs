@@ -1,15 +1,13 @@
 #![feature(fs_walk)]
 #![feature(dir_entry_ext)]
 #![feature(fs)]
-#![feature(collections)]
 #![feature(path_ext)]
 
 
 use std::io;
-use std::fs::{self, PathExt, DirEntry, walk_dir, Metadata};
+use std::fs::{self, PathExt,walk_dir, Metadata};
 use std::path::{Path, PathBuf};
 use std::env;
-use std::os;
 use std::thread;
 
 fn normalize(path: &Path) -> PathBuf {
@@ -36,15 +34,15 @@ fn to_unc_path(path: &Path) -> String {
 fn remove_file(path: &Path, metadata: &Metadata) -> io::Result<()> {
     let mut perms = metadata.permissions();
 
-    if (perms.readonly()) {
+    if perms.readonly() {
         perms.set_readonly(false);
-        fs::set_permissions(path, perms);
+        let _ = fs::set_permissions(path, perms);
     }
     let res = fs::remove_file(path);
     
     match res {
         Ok(()) => Ok(()),
-        Err(e) => {
+        Err(_) => {
             println!("Delete failed {:?}", path);
 
             Err(io::Error::last_os_error())
