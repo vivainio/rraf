@@ -43,7 +43,7 @@ fn remove_file(path: &Path, metadata: &Metadata) -> io::Result<()> {
     match res {
         Ok(()) => Ok(()),
         Err(err) => {
-            println!("Delete failed {:?}", path);
+            //println!("Delete failed {:?}", path);
 
             Err(err)
         }
@@ -52,7 +52,7 @@ fn remove_file(path: &Path, metadata: &Metadata) -> io::Result<()> {
 
 fn abspath(path: &Path) -> PathBuf {
     let cwd = env::current_dir().unwrap();
-    println!("CWD {:?}", cwd);
+    //println!("CWD {:?}", cwd);
     let mut buf = PathBuf::new();
     buf.push(cwd);
     buf.push(path);
@@ -86,6 +86,7 @@ fn main() {
     
 }
 
+
 fn nuke_tree(root: &str) -> bool {
     let walker = walk_dir(root).unwrap();
     let mut failed_files = 0;
@@ -114,9 +115,10 @@ fn nuke_tree(root: &str) -> bool {
  
                 }    
             }
-		} else if md.is_dir() {
-			println!("D: {:?}", path );
-		}
+		} 
+        //else if md.is_dir() {
+			//println!("D: {:?}", path );
+		//}
 
     }    
     if failed_files > 0 {
