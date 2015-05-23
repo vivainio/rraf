@@ -42,10 +42,10 @@ fn remove_file(path: &Path, metadata: &Metadata) -> io::Result<()> {
     
     match res {
         Ok(()) => Ok(()),
-        Err(_) => {
+        Err(err) => {
             println!("Delete failed {:?}", path);
 
-            Err(io::Error::last_os_error())
+            Err(err)
         }
     }
 }
@@ -94,12 +94,26 @@ fn nuke_tree(root: &str) -> bool {
     	let md = ent.metadata().unwrap();
 		let path = ent.path();
 		if md.is_file() {
- 			println!("F: {:?}", path );
+ 			//println!("F: {:?}", path );
             let r = remove_file(&path, &md);
-            if r.is_err() {
-                failed_files += 1;
-            }
+            match r {
+                Ok(()) => (),
+                Err(err) =>  {
+                    match err.raw_os_error() {
+                        Some(32) => {
+                            println!("Busy: {:?}", path);        
 
+                        },
+                        _ => {
+                            println!("File: {:?} Error: {:?}", path, err.raw_os_error() );
+
+                        }
+                    }
+
+                    failed_files += 1;
+ 
+                }    
+            }
 		} else if md.is_dir() {
 			println!("D: {:?}", path );
 		}
