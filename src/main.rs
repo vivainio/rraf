@@ -2,7 +2,7 @@
 #![feature(dir_entry_ext)]
 #![feature(fs)]
 #![feature(path_ext)]
-
+#![feature(exit_status)]
 
 use std::io;
 use std::fs::{self, PathExt,walk_dir, Metadata};
@@ -62,6 +62,12 @@ fn abspath(path: &Path) -> PathBuf {
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        println!("Usage: rraf DIRECTORY_TO_DELETE");
+        env::set_exit_status(1);
+        return;
+
+    }
     let p = Path::new(&args[1]);
     let apb = abspath(&p);
     let ap = apb.as_path();
