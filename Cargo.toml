@@ -7,4 +7,6 @@ license = "MIT"
 description = "Rust port of Rimraf"
 homepage="https://github.com/vivainio/rraf"
 
+[dependencies]
+regex = "0.1.8"
 

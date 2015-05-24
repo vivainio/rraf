@@ -11,8 +11,10 @@ use std::env;
 use std::thread;
 
 mod futil;
-
+mod winhandle;
 use futil::*;
+use winhandle::*;
+extern crate regex;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
