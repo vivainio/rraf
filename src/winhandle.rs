@@ -64,6 +64,7 @@ pub fn get_handles(path: &Path) -> Vec<HandleEnt> {
 	res
 }
 
+/*
 #[test]
 fn test_handle() {
 	let handles = get_handles(Path::new(r"c:\p\rraf\t"));
@@ -71,5 +72,5 @@ fn test_handle() {
 	let mut v = vec!(12,12);
 	bytes_to_str(&mut v);
 }
-
+*/
 
