@@ -9,4 +9,5 @@ homepage="https://github.com/vivainio/rraf"
 
 [dependencies]
 regex = "0.1.8"
+getopts = "0.2"
 
