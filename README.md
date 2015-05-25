@@ -7,7 +7,19 @@ rimraf (and obviously nodejs itself) sprinkle unwanted files around the file sys
 
 rraf, a stanalone Rust "port" of rimraf, is a single statically linked .exe file, so you can drop it anywhere.
 
-It only works in Windows, as *nix based operating systems don't have problems with the poweruser scenarios of removing 
-files from disk.
+Basic usage is just 
+
+```
+rraf path_to_delete
+```
+
+In case the files are locked, rraf can use systinternals [handle.exe](https://technet.microsoft.com/en-us/sysinternals/bb896655.aspx) to force the applications release the file handles (without killing the applications!). To use this feature, install "handle" from Chocolatey ("choco install handle") and provide "-c" argument (for "close"), like so:
+
+```
+rraf -c path_to_delete
+```
+
+rraf only works in Windows, as unix platforms don't generally have need for it due to less restricted PATH length and file system locking strategies.
 
 To build it, you need to grab a nightly build of Rust and do "cardo build".
+
