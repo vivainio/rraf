@@ -21,5 +21,5 @@ rraf -c path_to_delete
 
 rraf only works in Windows, as unix platforms don't generally have need for it due to less restricted PATH length and file system locking strategies.
 
-To build it, you need to grab a nightly build of Rust and do "cardo build".
+To build it, you need to grab a nightly build of Rust and do "cargo build".
 
