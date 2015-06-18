@@ -7,6 +7,13 @@ rimraf (and obviously nodejs itself) sprinkle unwanted files around the file sys
 
 rraf, a stanalone Rust "port" of rimraf, is a single statically linked .exe file, so you can drop it anywhere.
 
+
+## Installation
+
+Install rraf by downloading rraf.exe from https://github.com/vivainio/rraf/releases and putting it somewhere in your PATH.
+
+## Usage 
+
 Basic usage is just 
 
 ```
