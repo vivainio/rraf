@@ -12,6 +12,13 @@ rraf, a stanalone Rust "port" of rimraf, is a single statically linked .exe file
 
 Install rraf by downloading rraf.exe from https://github.com/vivainio/rraf/releases and putting it somewhere in your PATH.
 
+Recipe:
+```
+$ cd C:\ProgramData\chocolatey\bin
+$ curl -o rraf.exe https://github.com/vivainio/rraf/releases/download/v0.1.1/rraf.exe
+$ curl -o handle.exe https://live.sysinternals.com/handle.exe 
+```
+
 ## Usage 
 
 Basic usage is just 
