@@ -15,8 +15,8 @@ Install rraf by downloading rraf.exe from https://github.com/vivainio/rraf/relea
 Recipe:
 ```
 $ cd C:\ProgramData\chocolatey\bin
-$ curl -o rraf.exe https://github.com/vivainio/rraf/releases/download/v0.1.1/rraf.exe
-$ curl -o handle.exe https://live.sysinternals.com/handle.exe 
+$ curl -L -o rraf.exe https://github.com/vivainio/rraf/releases/download/v0.1.1/rraf.exe
+$ curl -L -o handle.exe https://live.sysinternals.com/handle.exe 
 ```
 
 ## Usage 
