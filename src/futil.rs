@@ -4,10 +4,9 @@ use std::path::{Path, PathBuf};
 use std::env;
 use std::thread;
 
-
-
 pub fn normalize(path: &Path) -> PathBuf {
   use std::path::Component::*;
+
   let mut ret = PathBuf::new();
   for component in path.components() {
     match component {
@@ -35,7 +34,7 @@ pub fn remove_file(path: &Path, metadata: &Metadata) -> io::Result<()> {
         let _ = fs::set_permissions(path, perms);
     }
     let res = fs::remove_file(path);
-    
+
     match res {
         Ok(()) => Ok(()),
         Err(err) => {

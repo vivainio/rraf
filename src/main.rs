@@ -1,8 +1,8 @@
 #![feature(fs_walk)]
-#![feature(dir_entry_ext)]
-#![feature(fs)]
+//#![feature(dir_entry_ext)]
+//#![feature(fs)]
 #![feature(path_ext)]
-#![feature(exit_status)]
+//#![feature(exit_status)]
 
 use std::io;
 use std::fs::{self, PathExt,walk_dir, Metadata};
@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 use std::env;
 use std::thread;
 use getopts::Options;
+use std::process;
 
 mod futil;
 mod winhandle;
@@ -46,25 +47,25 @@ fn main() {
     if matches.opt_present("h") {
         print_usage(&program, opts);
         return;
-    }        
+    }
 
     let free = &matches.free;
     if free.len() < 1 {
         println!("rraf: error: Must specify path to delete");
- 
-        env::set_exit_status(1);
+
+        process::exit(1);
         return;
     }
     let p = Path::new(&free[0]);
     let apb = abspath(&p);
     let ap = apb.as_path();
-    
+
     if !ap.is_dir() {
         println!("rraf: error: path does not exist: {:?}", ap);
- 
-        env::set_exit_status(1);
+
+        process::exit(1);
         return;
- 
+
     }
 
     if matches.opt_present("c") {
@@ -84,14 +85,14 @@ fn main() {
         }
         thread::sleep_ms(2000);
     }
-    
+
 }
 
 fn close_handles(root: &Path) {
     let handles = winhandle::get_handles(&root);
     for h in handles {
         h.close_handle();
-    } 
+    }
 }
 
 fn nuke_tree(root: &str) -> bool {
@@ -109,7 +110,7 @@ fn nuke_tree(root: &str) -> bool {
                 Err(err) =>  {
                     match err.raw_os_error() {
                         Some(32) => {
-                            println!("Busy: {:?}", path);        
+                            println!("Busy: {:?}", path);
 
                         },
                         _ => {
@@ -119,15 +120,15 @@ fn nuke_tree(root: &str) -> bool {
                     }
 
                     failed_files += 1;
- 
-                }    
+
+                }
             }
-		} 
+		}
         //else if md.is_dir() {
 			//println!("D: {:?}", path );
 		//}
 
-    }    
+    }
     if failed_files > 0 {
         println!("Failed files: {}", failed_files);
         return false;
