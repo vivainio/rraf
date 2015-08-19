@@ -12,12 +12,16 @@ use std::thread;
 use getopts::Options;
 use std::process;
 
+
 mod futil;
 mod winhandle;
 use futil::*;
 use winhandle::*;
+use glob::glob;
+
 extern crate regex;
 extern crate getopts;
+extern crate glob;
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -31,14 +35,7 @@ fn main() {
     opts.optflag("c", "close", "close locked file handles");
     opts.optflag("h", "help", "print this help menu");
     opts.optflag("i", "ignoremissing", "ignore missing directories");
-    /*
-    if args.len() < 2 {
-        println!("Usage: rraf DIRECTORY_TO_DELETE");
-        env::set_exit_status(1);
-        return;
 
-    }
-    */
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => { m }
         Err(f) => { panic!(f.to_string()) }
@@ -50,12 +47,13 @@ fn main() {
         return;
     }
 
-    let free = &matches.free;
+    let free: &Vec<String> = &matches.free;
+    
     if free.len() < 1 {
         println!("rraf: error: Must specify path to delete");
         process::exit(1);
     }
-    
+
     let p = Path::new(&free[0]);
     let apb = abspath(&p);
     let ap = apb.as_path();

@@ -3,6 +3,7 @@ use std::fs::{self, PathExt,walk_dir, Metadata};
 use std::path::{Path, PathBuf};
 use std::env;
 use std::thread;
+use glob;
 
 pub fn normalize(path: &Path) -> PathBuf {
   use std::path::Component::*;
@@ -18,6 +19,20 @@ pub fn normalize(path: &Path) -> PathBuf {
   ret
 }
 
+pub fn expand_arg_globs(globs: &Vec<String>) -> Vec<PathBuf> {
+    let mut res: Vec<PathBuf> = Vec::new();
+    for g in globs {
+        println!("glob {}", g);
+
+        let hits = glob::glob(g).unwrap();
+        for ho in hits {
+            let h = ho.unwrap();
+            println!("hit {:?}", h);
+            res.push(h);
+        }
+    }
+    return res;
+}
 
 
 pub fn to_unc_path(path: &Path) -> String {
@@ -59,5 +74,18 @@ pub fn abspath(path: &Path) -> PathBuf {
 #[test]
 fn abspath_root() {
 	let ap = abspath(Path::new("\\"));
+}
+#[test]
+fn arg_globs() {
+    {
+        let mut vec = Vec::new();
+        vec.push("hello".to_string());
+        vec.push("world".to_string());
+        vec.push("c:/Users/*".to_string());
+        let matches = expand_arg_globs(&vec);
+        assert!(matches.len() > 0);
+    }
+
 
 }
+
