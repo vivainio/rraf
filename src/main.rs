@@ -17,7 +17,6 @@ mod futil;
 mod winhandle;
 use futil::*;
 use winhandle::*;
-use glob::glob;
 
 extern crate regex;
 extern crate getopts;
@@ -48,41 +47,42 @@ fn main() {
     }
 
     let free: &Vec<String> = &matches.free;
-    
+
     if free.len() < 1 {
         println!("rraf: error: Must specify path to delete");
         process::exit(1);
     }
+    let paths = futil::expand_arg_globs(free);
+    let abspaths = paths.into_iter().map(|p| abspath(p.as_path()));
 
-    let p = Path::new(&free[0]);
-    let apb = abspath(&p);
-    let ap = apb.as_path();
+    for apbuf in abspaths {
+        let ap = apbuf.as_path();
+        if !ap.is_dir() {
+            if !matches.opt_present("i") {
+                println!("rraf: error: path does not exist: {:?}", ap);
+                process::exit(1);
+            } else {
+                process::exit(0);
+            }
+        }
 
-    if !ap.is_dir() {
-        if !matches.opt_present("i") {
-            println!("rraf: error: path does not exist: {:?}", ap);
-            process::exit(1);
-        } else {
-            process::exit(0);
+        if matches.opt_present("c") {
+            println!("Closing handles {:?}",ap );
+            close_handles(ap);
         }
-    }
-
-    if matches.opt_present("c") {
-        println!("Closing handles {:?}",ap );
-        close_handles(ap);
-    }
-    let uncp = to_unc_path(ap);
-    let mut counter = 10;
-    loop {
-        let ok = nuke_tree(&uncp);
-        if ok {
-            break;
+        let uncp = to_unc_path(ap);
+        let mut counter = 10;
+        loop {
+            let ok = nuke_tree(&uncp);
+            if ok {
+                break;
+            }
+            counter = counter-1;
+            if counter == 0 {
+                break;
+            }
+            thread::sleep_ms(2000);
         }
-        counter = counter-1;
-        if counter == 0 {
-            break;
-        }
-        thread::sleep_ms(2000);
     }
 
 }
