@@ -30,6 +30,7 @@ fn main() {
     let mut opts = Options::new();
     opts.optflag("c", "close", "close locked file handles");
     opts.optflag("h", "help", "print this help menu");
+    opts.optflag("i", "ignoremissing", "ignore missing directories");
     /*
     if args.len() < 2 {
         println!("Usage: rraf DIRECTORY_TO_DELETE");
@@ -52,20 +53,20 @@ fn main() {
     let free = &matches.free;
     if free.len() < 1 {
         println!("rraf: error: Must specify path to delete");
-
         process::exit(1);
-        return;
     }
+    
     let p = Path::new(&free[0]);
     let apb = abspath(&p);
     let ap = apb.as_path();
 
     if !ap.is_dir() {
-        println!("rraf: error: path does not exist: {:?}", ap);
-
-        process::exit(1);
-        return;
-
+        if !matches.opt_present("i") {
+            println!("rraf: error: path does not exist: {:?}", ap);
+            process::exit(1);
+        } else {
+            process::exit(0);
+        }
     }
 
     if matches.opt_present("c") {
