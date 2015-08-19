@@ -33,7 +33,7 @@ fn main() {
     let mut opts = Options::new();
     opts.optflag("c", "close", "close locked file handles");
     opts.optflag("h", "help", "print this help menu");
-    opts.optflag("i", "ignoremissing", "ignore missing directories");
+    opts.optflag("v", "verbose", "show directories to be deleted");
 
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => { m }
@@ -49,25 +49,28 @@ fn main() {
     let free: &Vec<String> = &matches.free;
 
     if free.len() < 1 {
-        println!("rraf: error: Must specify path to delete");
+        println!("rraf: error: Must specify path(s) to delete, wildcards ok");
         process::exit(1);
     }
-    let paths = futil::expand_arg_globs(free);
+    let paths = futil::expand_arg_globs(free, matches.opt_present("v"));
     let abspaths = paths.into_iter().map(|p| abspath(p.as_path()));
+
+    if abspaths.len() == 0 {
+        println!("rraf: warning: nothing to do, no matching paths found")
+    }
 
     for apbuf in abspaths {
         let ap = apbuf.as_path();
+        if matches.opt_present("v") {
+            println!("{:?}", ap);
+        }
         if !ap.is_dir() {
-            if !matches.opt_present("i") {
-                println!("rraf: error: path does not exist: {:?}", ap);
-                process::exit(1);
-            } else {
-                process::exit(0);
-            }
+            println!("Skipping missing directory {:?}", ap);
+            continue;
         }
 
         if matches.opt_present("c") {
-            println!("Closing handles {:?}",ap );
+            println!("Closing handles: {:?}",ap);
             close_handles(ap);
         }
         let uncp = to_unc_path(ap);
@@ -114,19 +117,12 @@ fn nuke_tree(root: &str) -> bool {
                         },
                         _ => {
                             println!("File: {:?} Error: {:?}", path, err.raw_os_error() );
-
                         }
                     }
-
                     failed_files += 1;
-
                 }
             }
 		}
-        //else if md.is_dir() {
-			//println!("D: {:?}", path );
-		//}
-
     }
     if failed_files > 0 {
         println!("Failed files: {}", failed_files);

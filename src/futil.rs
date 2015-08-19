@@ -19,16 +19,19 @@ pub fn normalize(path: &Path) -> PathBuf {
   ret
 }
 
-pub fn expand_arg_globs(globs: &Vec<String>) -> Vec<PathBuf> {
+pub fn expand_arg_globs(globs: &Vec<String>, warn: bool) -> Vec<PathBuf> {
     let mut res: Vec<PathBuf> = Vec::new();
     for g in globs {
-        println!("glob {}", g);
-
         let hits = glob::glob(g).unwrap();
+        let mut found = false;
         for ho in hits {
-            let h = ho.unwrap();
-            println!("hit {:?}", h);
+            let h: PathBuf = ho.unwrap();
+            found = true;
             res.push(h);
+        }
+        if !found && warn {
+            println!("rraf: warning: no files matching pattern '{}'", g);
+
         }
     }
     return res;
@@ -53,8 +56,6 @@ pub fn remove_file(path: &Path, metadata: &Metadata) -> io::Result<()> {
     match res {
         Ok(()) => Ok(()),
         Err(err) => {
-            //println!("Delete failed {:?}", path);
-
             Err(err)
         }
     }
@@ -62,12 +63,10 @@ pub fn remove_file(path: &Path, metadata: &Metadata) -> io::Result<()> {
 
 pub fn abspath(path: &Path) -> PathBuf {
     let cwd = env::current_dir().unwrap();
-    //println!("CWD {:?}", cwd);
     let mut buf = PathBuf::new();
     buf.push(cwd);
     buf.push(path);
     normalize(buf.as_path())
-   // buf.push(cwd);
 }
 
 
@@ -82,7 +81,7 @@ fn arg_globs() {
         vec.push("hello".to_string());
         vec.push("world".to_string());
         vec.push("c:/Users/*".to_string());
-        let matches = expand_arg_globs(&vec);
+        let matches = expand_arg_globs(&vec, true);
         assert!(matches.len() > 0);
     }
 
