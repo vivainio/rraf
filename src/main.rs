@@ -9,7 +9,7 @@ use std::fs::{self, PathExt,walk_dir, Metadata};
 use std::path::{Path, PathBuf};
 use std::env;
 use std::thread;
-use getopts::Options;
+use getopts::{Matches, Options};
 use std::process;
 
 
@@ -34,17 +34,21 @@ fn main() {
     opts.optflag("c", "close", "close locked file handles");
     opts.optflag("h", "help", "print this help menu");
     opts.optflag("v", "verbose", "show directories to be deleted");
+    opts.optflag("g", "gitclean", "clean all directories in git ignore list");
 
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => { m }
         Err(f) => { panic!(f.to_string()) }
     };
 
-
     if matches.opt_present("h") {
         print_usage(&program, opts);
         return;
     }
+
+    if matches.opt_present("g") {
+    }
+
 
     let free: &Vec<String> = &matches.free;
 
@@ -53,12 +57,18 @@ fn main() {
         process::exit(1);
     }
     let paths = futil::expand_arg_globs(free, matches.opt_present("v"));
-    let abspaths = paths.into_iter().map(|p| abspath(p.as_path()));
+    let abspaths: Vec<PathBuf> = paths.into_iter().map(|p| abspath(p.as_path())).collect();
 
     if abspaths.len() == 0 {
         println!("rraf: warning: nothing to do, no matching paths found")
     }
 
+    nuke_abspaths(&abspaths, &matches);
+
+
+}
+
+fn nuke_abspaths(abspaths: &Vec<PathBuf>, matches: &Matches) {
     for apbuf in abspaths {
         let ap = apbuf.as_path();
         if matches.opt_present("v") {
