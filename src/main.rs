@@ -27,6 +27,12 @@ fn print_usage(program: &str, opts: Options) {
     print!("{}", opts.usage(&brief));
 }
 
+fn print_version() {
+    println!("rraf version: 1.0.1");
+    println!("Project homepage: https://github.com/vivainio/rraf")
+}
+
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let program = args[0].clone();
@@ -34,8 +40,7 @@ fn main() {
     opts.optflag("c", "close", "close locked file handles");
     opts.optflag("h", "help", "print this help menu");
     opts.optflag("v", "verbose", "show directories to be deleted");
-    opts.optflag("g", "gitclean", "clean all directories in git ignore list");
-
+    opts.optflag("", "version", "show version info");
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => { m }
         Err(f) => { panic!(f.to_string()) }
@@ -46,7 +51,9 @@ fn main() {
         return;
     }
 
-    if matches.opt_present("g") {
+    if matches.opt_present("version") {
+        print_version();
+        return;
     }
 
 
@@ -54,6 +61,8 @@ fn main() {
 
     if free.len() < 1 {
         println!("rraf: error: Must specify path(s) to delete, wildcards ok");
+        println!("'rraf -h' for help on available options");
+
         process::exit(1);
     }
     let paths = futil::expand_arg_globs(free, matches.opt_present("v"));
