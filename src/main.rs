@@ -141,18 +141,22 @@ fn nuke_tree(root: &str) -> bool {
                     failed_files += 1;
                 }
             }
-		}
+        } else if md.is_dir() {
+            fs::remove_dir_all(path);
+        }
     }
     if failed_files > 0 {
         println!("Failed files: {}", failed_files);
         return false;
     }
     let r = fs::remove_dir_all(root);
-    if !r.is_err() {
-        return true;
+    return match r {
+        Ok(()) => true,
+        Err(err) => {
+            println!("remove_dir_all failed with {:?}", err.raw_os_error());
+            false
+        }
     }
-
-    return false;
 
 }
 
