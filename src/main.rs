@@ -1,26 +1,30 @@
-#![feature(fs_walk)]
+//#![feature(fs_walk)]
 //#![feature(dir_entry_ext)]
 //#![feature(fs)]
-#![feature(path_ext)]
+//#![feature(path_ext)]
 //#![feature(exit_status)]
 
-use std::io;
-use std::fs::{self, walk_dir, Metadata};
+//use std::io;
+use std::fs::{self};
 use std::path::{Path, PathBuf};
 use std::env;
 use std::thread;
 use getopts::{Matches, Options};
 use std::process;
+use std::time::Duration;
+
 
 
 mod futil;
 mod winhandle;
 use futil::*;
-use winhandle::*;
+//use winhandle::*;
+use walkdir::WalkDir;
 
 extern crate regex;
 extern crate getopts;
 extern crate glob;
+extern crate walkdir;
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -103,7 +107,7 @@ fn nuke_abspaths(abspaths: &Vec<PathBuf>, matches: &Matches) {
             if counter == 0 {
                 break;
             }
-            thread::sleep_ms(2000);
+            thread::sleep(Duration::from_secs(2));
         }
     }
 
@@ -117,7 +121,8 @@ fn close_handles(root: &Path) {
 }
 
 fn nuke_tree(root: &str) -> bool {
-    let walker = walk_dir(root).unwrap();
+    //let walker = walk_dir(root).unwrap();
+    let walker = WalkDir::new(root);
     let mut failed_files = 0;
     for w in walker {
         let ent = w.unwrap();

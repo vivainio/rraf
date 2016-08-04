@@ -1,8 +1,8 @@
 use std::io;
-use std::fs::{self, PathExt,walk_dir, Metadata};
+use std::fs::{self, Metadata};
 use std::path::{Path, PathBuf};
 use std::env;
-use std::thread;
+//use std::thread;
 use glob;
 
 pub fn normalize(path: &Path) -> PathBuf {
@@ -72,7 +72,7 @@ pub fn abspath(path: &Path) -> PathBuf {
 
 #[test]
 fn abspath_root() {
-	let ap = abspath(Path::new("\\"));
+	let _ = abspath(Path::new("\\"));
 }
 #[test]
 fn arg_globs() {

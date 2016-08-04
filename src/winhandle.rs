@@ -20,7 +20,7 @@ impl HandleEnt {
 			.arg(&self.handle)
 			.arg("-y")
 			.output().unwrap();
-		
+
 
 	}
 
@@ -60,7 +60,7 @@ pub fn get_handles(path: &Path) -> Vec<HandleEnt> {
 			process_name: cap.name("img").unwrap().to_string()
 		};
 		res.push(ent);
-	}	
+	}
 	res
 }
 
