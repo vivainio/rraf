@@ -13,8 +13,6 @@ use getopts::{Matches, Options};
 use std::process;
 use std::time::Duration;
 
-
-
 mod futil;
 mod winhandle;
 use futil::*;
@@ -145,10 +143,9 @@ fn nuke_tree(root: &str) -> bool {
                     match err.raw_os_error() {
                         Some(32) => {
                             println!("Busy: {:?}", path);
-
                         },
                         _ => {
-                            println!("File: {:?} Error: {:?}", path, err.raw_os_error() );
+                            println!("File: {:?} Error: {:?}", path, err.raw_os_error());
                         }
                     }
                     failed_files += 1;
@@ -166,8 +163,7 @@ fn nuke_tree(root: &str) -> bool {
     return match r {
         Ok(()) => true,
         Err(err) => {
-            println!("remove_dir_all failed with {:?}", err.raw_os_error());
-            false
+            if err.raw_os_error().unwrap() == 2 { true } else { false }
         }
     }
 
