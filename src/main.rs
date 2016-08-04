@@ -5,7 +5,7 @@
 //#![feature(exit_status)]
 
 use std::io;
-use std::fs::{self, PathExt,walk_dir, Metadata};
+use std::fs::{self, walk_dir, Metadata};
 use std::path::{Path, PathBuf};
 use std::env;
 use std::thread;
@@ -120,11 +120,19 @@ fn nuke_tree(root: &str) -> bool {
     let walker = walk_dir(root).unwrap();
     let mut failed_files = 0;
     for w in walker {
-    	let ent = w.unwrap();
-    	let md = ent.metadata().unwrap();
-		let path = ent.path();
-		if md.is_file() {
- 			//println!("F: {:?}", path );
+        let ent = w.unwrap();
+        let md = ent.metadata().unwrap();
+        let path = ent.path();
+        let file_type = md.file_type();
+
+        if file_type.is_symlink() {
+            println!("rraf: error: Symlink found, bailing out: {:?}", path);
+            return false;
+        }
+
+        if file_type.is_file() {
+
+            //println!("F: {:?}", path );
             let r = remove_file(&path, &md);
             match r {
                 Ok(()) => (),
@@ -141,7 +149,7 @@ fn nuke_tree(root: &str) -> bool {
                     failed_files += 1;
                 }
             }
-        } else if md.is_dir() {
+        } else if file_type.is_dir() {
             fs::remove_dir_all(path);
         }
     }
