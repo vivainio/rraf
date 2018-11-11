@@ -43,6 +43,8 @@ fn main() {
     opts.optflag("h", "help", "print this help menu");
     opts.optflag("v", "verbose", "show directories to be deleted");
     opts.optflag("", "version", "show version info");
+    opts.optflag("" ,"git", "faster gitclean");
+
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => { m }
         Err(f) => { panic!(f.to_string()) }
