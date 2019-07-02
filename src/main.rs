@@ -152,7 +152,7 @@ fn nuke_tree(root: &str) -> bool {
                 }
             }
         } else if file_type.is_dir() {
-            fs::remove_dir_all(path);
+            let _ =fs::remove_dir_all(path);
         }
     }
     if failed_files > 0 {

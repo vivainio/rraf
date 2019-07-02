@@ -1,13 +1,11 @@
 use std::process::Command;
 use std::path::*;
 use regex::{Regex, Captures};
-use std::str::FromStr;
 
 pub struct HandleEnt {
 	pid: String,
 	handle: String,
 	process_name: String,
-	file_name: String
 }
 
 impl HandleEnt {
@@ -54,7 +52,6 @@ pub fn get_handles(path: &Path) -> Vec<HandleEnt> {
 		let ent = HandleEnt {
 			pid: cap.name("pid").unwrap().to_string(),
 			handle: cap.name("hnd").unwrap().to_string(),
-			file_name: cap.name("rest").unwrap().to_string(),
 			process_name: cap.name("img").unwrap().to_string()
 		};
 		res.push(ent);
