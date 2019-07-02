@@ -13,15 +13,14 @@ pub struct HandleEnt {
 impl HandleEnt {
 	pub fn close_handle(&self) {
 		println!("Closing handle for {}", self.process_name );
-		let o = Command::new("handle")
+		Command::new("handle")
 			.arg("-p")
 			.arg(&self.pid)
 			.arg("-c")
 			.arg(&self.handle)
 			.arg("-y")
-			.output().unwrap();
-
-
+			.output()
+			.unwrap();
 	}
 
 }
@@ -37,7 +36,6 @@ fn bytes_to_str(buf: &Vec<u8>) -> String {
 	let mut v = buf.clone();
 	v.retain(|&ch| ch != '\r' as u8);
 	String::from_utf8_lossy(&v).into_owned()
-
 }
 
 pub fn get_handles(path: &Path) -> Vec<HandleEnt> {

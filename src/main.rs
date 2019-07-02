@@ -13,12 +13,9 @@ use getopts::{Matches, Options};
 use std::process;
 use std::time::Duration;
 
-
-
 mod futil;
 mod winhandle;
 use futil::*;
-//use winhandle::*;
 use walkdir::WalkDir;
 
 extern crate regex;
@@ -60,7 +57,6 @@ fn main() {
         return;
     }
 
-
     let free: &Vec<String> = &matches.free;
 
     if free.len() < 1 {
@@ -69,6 +65,7 @@ fn main() {
 
         process::exit(1);
     }
+
     let paths = futil::expand_arg_globs(free, matches.opt_present("v"));
     let abspaths: Vec<PathBuf> = paths.into_iter().map(|p| abspath(p.as_path())).collect();
 
@@ -166,6 +163,7 @@ fn nuke_tree(root: &str) -> bool {
     return match r {
         Ok(()) => true,
         Err(err) => {
+
             println!("remove_dir_all failed with {:?}", err.raw_os_error());
             false
         }
