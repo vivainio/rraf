@@ -1,6 +1,6 @@
 use std::process::Command;
 use std::path::*;
-use regex::{Regex, Captures};
+use regex::{Regex};
 
 pub struct HandleEnt {
 	pid: String,
@@ -23,13 +23,6 @@ impl HandleEnt {
 
 }
 
-fn dump_named_captures(cs: &Captures) {
-	for (k,v) in cs.iter_named() {
-		println!("Captured: {:?} {:?} ", k,v);
-	}
-
-}
-
 fn bytes_to_str(buf: &Vec<u8>) -> String {
 	let mut v = buf.clone();
 	v.retain(|&ch| ch != '\r' as u8);
@@ -48,7 +41,6 @@ pub fn get_handles(path: &Path) -> Vec<HandleEnt> {
 
 	let mut res: Vec<HandleEnt> = vec!();
 	for cap in re.captures_iter(&outs) {
-		//dump_named_captures(&cap);
 		let ent = HandleEnt {
 			pid: cap.name("pid").unwrap().to_string(),
 			handle: cap.name("hnd").unwrap().to_string(),
@@ -58,14 +50,3 @@ pub fn get_handles(path: &Path) -> Vec<HandleEnt> {
 	}
 	res
 }
-
-/*
-#[test]
-fn test_handle() {
-	let handles = get_handles(Path::new(r"c:\p\rraf\t"));
-	handles[0].close_handle();
-	let mut v = vec!(12,12);
-	bytes_to_str(&mut v);
-}
-*/
-
