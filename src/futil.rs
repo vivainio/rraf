@@ -4,6 +4,8 @@ use std::path::{Path, PathBuf};
 use std::env;
 //use std::thread;
 use glob;
+use winhandle::get_handles;
+use std::process;
 
 pub fn normalize(path: &Path) -> PathBuf {
   use std::path::Component::*;
@@ -69,6 +71,51 @@ pub fn abspath(path: &Path) -> PathBuf {
     normalize(buf.as_path())
 }
 
+pub struct Trash {
+    root_path: String,
+    cur_path: String
+}
+
+impl Trash {
+    pub fn new() -> Trash {
+        let pid = process::id();
+        let tdir = get_trash_dir();
+        let mut cd = tdir.clone();
+        cd.push(pid);
+        Trash {
+            root_path: tdir.into(),
+            cur_path: cd.into()
+        }
+    }
+    
+    pub fn move_path(&self, path: &str) -> Result<(), io::Error> {
+        let tdir = &self.cur_path;
+        fs::rename(path, tdir)
+    }
+    
+}
+
+pub fn get_trash_dir() -> PathBuf {
+    let mut p = env::temp_dir();
+    p.push("rraf_trash");
+    p
+}
+
+#[test]
+fn use_trash() {
+    t = Trash::new();
+}    
+     
+#[test]
+fn test_trash_dir() {
+    let td = get_trash_dir();
+    println!("trash: {}", td.to_str().unwrap());
+}
+
+
+
+
+
 #[test]
 fn abspath_root() {
 	let _ = abspath(Path::new("\\"));
@@ -83,7 +130,5 @@ fn arg_globs() {
         let matches = expand_arg_globs(&vec, true);
         assert!(matches.len() > 0);
     }
-
-
 }
 
