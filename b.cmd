@@ -1,2 +1,2 @@
-rem C:\opt\rust\bin\cargo.exe build
-C:\opt\rust\bin\cargo.exe test -- --nocapture
+C:\opt\rust\bin\cargo.exe build
+rem C:\opt\rust\bin\cargo.exe test -- --nocapture

@@ -39,9 +39,9 @@ pub fn expand_arg_globs(globs: &Vec<String>, warn: bool) -> Vec<PathBuf> {
 
 
 pub fn to_unc_path(path: &Path) -> String {
-	let buf = path.to_str().unwrap().clone();
-	let ns = format!(r"\\?\{}", buf);
-	ns
+    let buf = path.to_str().unwrap().clone();
+    let ns = format!(r"\\?\{}", buf);
+    ns
 }
 
 pub fn remove_file(path: &Path, metadata: &Metadata) -> io::Result<()> {
@@ -68,7 +68,6 @@ pub fn abspath(path: &Path) -> PathBuf {
     buf.push(path);
     normalize(buf.as_path())
 }
-
 
 #[test]
 fn abspath_root() {
