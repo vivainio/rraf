@@ -18,6 +18,7 @@ mod winhandle;
 use futil::*;
 use walkdir::WalkDir;
 mod gitcmd;
+use gitcmd::git_ignored_dirs;
 
 extern crate regex;
 extern crate getopts;
@@ -44,8 +45,8 @@ fn main() {
     opts.optflag("h", "help", "print this help menu");
     opts.optflag("v", "verbose", "show directories to be deleted");
     opts.optflag("", "version", "show version info");
-    opts.optflag("" ,"git", "faster gitclean");
-
+    opts.optflag("g" ,"git", "faster gitclean");
+    
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => { m }
         Err(f) => { panic!(f.to_string()) }
@@ -61,6 +62,10 @@ fn main() {
         return;
     }
 
+    if matches.opt_present("git") {
+        handle_gitignore();
+        return;
+    }
     let free: &Vec<String> = &matches.free;
 
     if free.len() < 1 {
@@ -172,4 +177,12 @@ fn nuke_tree(root: &str) -> bool {
 
 }
 
-
+fn handle_gitignore() {
+    let mut ls = git_ignored_dirs("c:/r/1");
+    ls.retain(|l| l.ends_with("/"));
+    ls.sort_by_key(|k| k.len());
+    for l in ls {
+        print!("Line {}\n", l);
+    }
+    
+}

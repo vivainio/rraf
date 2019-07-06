@@ -16,6 +16,8 @@ pub fn git_ignored_dirs(workdir: &str) -> Vec<String> {
     lines
 }
 
+
+
 #[test]
 fn test_git() {
     let mut ls = git_ignored_dirs("c:/r/1");
