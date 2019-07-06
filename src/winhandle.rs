@@ -20,8 +20,9 @@ impl HandleEnt {
 			.output()
 			.unwrap();
 	}
-
 }
+
+
 
 fn bytes_to_str(buf: &Vec<u8>) -> String {
 	let mut v = buf.clone();

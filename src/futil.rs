@@ -6,6 +6,9 @@ use std::env;
 use glob;
 use winhandle::get_handles;
 use std::process;
+use std::num;
+use std::env::temp_dir;
+use core::borrow::Borrow;
 
 pub fn normalize(path: &Path) -> PathBuf {
   use std::path::Component::*;
@@ -72,27 +75,28 @@ pub fn abspath(path: &Path) -> PathBuf {
 }
 
 pub struct Trash {
-    root_path: String,
-    cur_path: String
+    root_path: PathBuf,
+    cur_path: PathBuf
 }
 
 impl Trash {
     pub fn new() -> Trash {
-        let pid = process::id();
+        let pid: String = process::id().to_owned().to_string();
         let tdir = get_trash_dir();
         let mut cd = tdir.clone();
-        cd.push(pid);
+        cd.push(pid );
         Trash {
-            root_path: tdir.into(),
-            cur_path: cd.into()
+            root_path: tdir,
+            cur_path: cd
         }
     }
     
-    pub fn move_path(&self, path: &str) -> Result<(), io::Error> {
+    pub fn move_path(&self, path: &Path) -> Result<(), io::Error> {
         let tdir = &self.cur_path;
-        fs::rename(path, tdir)
+        print!("Trash to: {}", &tdir.display());
+        fs::rename(&path, &tdir)
+        
     }
-    
 }
 
 pub fn get_trash_dir() -> PathBuf {
@@ -103,17 +107,21 @@ pub fn get_trash_dir() -> PathBuf {
 
 #[test]
 fn use_trash() {
-    t = Trash::new();
-}    
+    let t = Trash::new();
+    
+    // 1. create dir to nuke
+    let mut td = env::temp_dir();
+    td.push("one");
+    fs::create_dir(&td);
+    t.move_path(td.as_path());
+    
+}   
      
 #[test]
 fn test_trash_dir() {
     let td = get_trash_dir();
     println!("trash: {}", td.to_str().unwrap());
 }
-
-
-
 
 
 #[test]

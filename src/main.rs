@@ -17,11 +17,13 @@ mod futil;
 mod winhandle;
 use futil::*;
 use walkdir::WalkDir;
+mod gitcmd;
 
 extern crate regex;
 extern crate getopts;
 extern crate glob;
 extern crate walkdir;
+extern crate core;
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options]", program);
