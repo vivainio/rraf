@@ -16,7 +16,6 @@ use std::time::Duration;
 mod futil;
 mod winhandle;
 use futil::*;
-use walkdir::WalkDir;
 mod gitcmd;
 use gitcmd::git_ignored_dirs;
 
@@ -106,7 +105,7 @@ fn nuke_abspaths(abspaths: &Vec<PathBuf>, matches: &Matches) {
         let uncp = to_unc_path(ap);
         let mut counter = 10;
         loop {
-            let ok = nuke_tree(&uncp);
+            let ok = futil::nuke_tree(&uncp);
             if ok {
                 break;
             }
@@ -127,56 +126,6 @@ fn close_handles(root: &Path) {
     }
 }
 
-fn nuke_tree(root: &str) -> bool {
-    //let walker = walk_dir(root).unwrap();
-    let walker = WalkDir::new(root);
-    let mut failed_files = 0;
-    for w in walker {
-        let ent = w.unwrap();
-        let md = ent.metadata().unwrap();
-        let path = ent.path();
-        let file_type = md.file_type();
-
-        if file_type.is_symlink() {
-            println!("rraf: error: Symlink found, bailing out: {:?}", path);
-            return false;
-        }
-
-        if file_type.is_file() {
-
-            //println!("F: {:?}", path );
-            let r = remove_file(&path, &md);
-            match r {
-                Ok(()) => (),
-                Err(err) =>  {
-                    match err.raw_os_error() {
-                        Some(32) => {
-                            println!("Busy: {:?}", path);
-                        },
-                        _ => {
-                            println!("File: {:?} Error: {:?}", path, err.raw_os_error());
-                        }
-                    }
-                    failed_files += 1;
-                }
-            }
-        } else if file_type.is_dir() {
-            let _ =fs::remove_dir_all(path);
-        }
-    }
-    if failed_files > 0 {
-        println!("Failed files: {}", failed_files);
-        return false;
-    }
-    let r = fs::remove_dir_all(root);
-    return match r {
-        Ok(()) => true,
-        Err(err) => {
-            if err.raw_os_error().unwrap() == 2 { true } else { false }
-        }
-    }
-
-}
 
 fn handle_gitignore() {
     
@@ -189,7 +138,12 @@ fn handle_gitignore() {
     for l in ls {
         print!("Line {}\n", l);
         let p = Path::new(&l);
-        trash.move_path(&p).expect("Could not move path");
+        let status = trash.move_path(&p);
+        if status.is_err() {
+            print!("Error moving out {}", &l);
+        }
     }
+    
+    trash.purge();
     
 }

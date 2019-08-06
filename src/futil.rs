@@ -10,6 +10,8 @@ use std::num;
 use std::env::temp_dir;
 use core::borrow::Borrow;
 use rand::Rng;
+use walkdir::WalkDir;
+use std::ffi::OsStr;
 
 
 pub fn normalize(path: &Path) -> PathBuf {
@@ -98,12 +100,19 @@ impl Trash {
     pub fn move_path(&self, path: &Path) -> Result<(), io::Error> {
         let tdir = &self.cur_path;
         let mut r = tdir.clone();
-        let ra = rand::thread_rng().gen_range(0, 9999999);
-        let rs: String = ra.to_owned().to_string();
-        r.push(rs);
+        let mut dname = rand::thread_rng().gen_range(0, 9999999).to_owned().to_string();
+        
+        let stem = path.file_stem().unwrap_or(OsStr::new("nn")).to_str().unwrap();
+        dname.push_str(&stem);
+        r.push(dname);
         print!("Trash to: {} -> {}\n", &path.display(), &r.display());
         fs::rename(&path, &r)
         
+    }
+    
+    pub fn purge(&self) {
+        print!("Purging {}\n", self.cur_path.display());
+        fs::remove_dir_all(&self.cur_path).expect("purge failed");
     }
 }
 
@@ -112,6 +121,58 @@ pub fn get_trash_dir() -> PathBuf {
     p.push("rraf_trash");
     p
 }
+
+pub fn nuke_tree(root: &str) -> bool {
+    //let walker = walk_dir(root).unwrap();
+    let walker = WalkDir::new(root);
+    let mut failed_files = 0;
+    for w in walker {
+        let ent = w.unwrap();
+        let md = ent.metadata().unwrap();
+        let path = ent.path();
+        let file_type = md.file_type();
+
+        if file_type.is_symlink() {
+            println!("rraf: error: Symlink found, bailing out: {:?}", path);
+            return false;
+        }
+
+        if file_type.is_file() {
+
+            //println!("F: {:?}", path );
+            let r = remove_file(&path, &md);
+            match r {
+                Ok(()) => (),
+                Err(err) =>  {
+                    match err.raw_os_error() {
+                        Some(32) => {
+                            println!("Busy: {:?}", path);
+                        },
+                        _ => {
+                            println!("File: {:?} Error: {:?}", path, err.raw_os_error());
+                        }
+                    }
+                    failed_files += 1;
+                }
+            }
+        } else if file_type.is_dir() {
+            let _ =fs::remove_dir_all(path);
+        }
+    }
+    if failed_files > 0 {
+        println!("Failed files: {}", failed_files);
+        return false;
+    }
+    let r = fs::remove_dir_all(root);
+    return match r {
+        Ok(()) => true,
+        Err(err) => {
+            if err.raw_os_error().unwrap() == 2 { true } else { false }
+        }
+    }
+
+}
+
 
 #[test]
 fn use_trash() {

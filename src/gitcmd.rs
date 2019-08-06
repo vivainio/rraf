@@ -16,6 +16,15 @@ pub fn git_ignored_dirs(workdir: &str) -> Vec<String> {
     lines
 }
 
+pub fn git_clean(workdir: &str) {
+    let out = Command::new("git")
+        .arg("clean")
+        .arg("-xdf")
+        .output()
+        .unwrap();
+    
+}
+
 
 
 #[test]
