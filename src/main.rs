@@ -17,7 +17,7 @@ mod futil;
 mod winhandle;
 use futil::*;
 mod gitcmd;
-use gitcmd::git_ignored_dirs;
+use gitcmd::{git_ignored_dirs, git_clean};
 
 extern crate regex;
 extern crate getopts;
@@ -128,9 +128,9 @@ fn close_handles(root: &Path) {
 
 
 fn handle_gitignore() {
-    
-    env::set_current_dir("c:/r/1");
-    let mut ls = git_ignored_dirs("c:/r/1");
+    let workdir = "c:/r/1";
+    env::set_current_dir(&workdir);
+    let mut ls = git_ignored_dirs(&workdir);
     ls.retain(|l| l.ends_with("/"));
     ls.sort_by_key(|k| k.len());
     let trash = Trash::new();
@@ -144,6 +144,9 @@ fn handle_gitignore() {
         }
     }
     
+    let mut hnd = git_clean(&workdir).expect("can't launch git clean");
     trash.purge();
+    print!("Purge complete!\n");
+    hnd.wait();
     
 }

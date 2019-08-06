@@ -1,6 +1,8 @@
-use std::process::Command;
+use std::process::{Command, Child};
 use std::path::{Path, PathBuf};
 use std::str::Lines;
+use std::error::Error;
+use std::io;
 
 
 pub fn git_ignored_dirs(workdir: &str) -> Vec<String> {
@@ -16,12 +18,13 @@ pub fn git_ignored_dirs(workdir: &str) -> Vec<String> {
     lines
 }
 
-pub fn git_clean(workdir: &str) {
+pub fn git_clean(workdir: &str) -> io::Result<Child>{
     let out = Command::new("git")
         .arg("clean")
         .arg("-xdf")
-        .output()
-        .unwrap();
+        .env("GIT_ASK_YESNO", "false")
+        .spawn();
+    out
     
 }
 
