@@ -9,6 +9,8 @@ use std::process;
 use std::num;
 use std::env::temp_dir;
 use core::borrow::Borrow;
+use rand::Rng;
+
 
 pub fn normalize(path: &Path) -> PathBuf {
   use std::path::Component::*;
@@ -84,7 +86,9 @@ impl Trash {
         let pid: String = process::id().to_owned().to_string();
         let tdir = get_trash_dir();
         let mut cd = tdir.clone();
+        
         cd.push(pid );
+        fs::create_dir_all(&cd).expect("Could not create trash dir");
         Trash {
             root_path: tdir,
             cur_path: cd
@@ -93,8 +97,12 @@ impl Trash {
     
     pub fn move_path(&self, path: &Path) -> Result<(), io::Error> {
         let tdir = &self.cur_path;
-        print!("Trash to: {}", &tdir.display());
-        fs::rename(&path, &tdir)
+        let mut r = tdir.clone();
+        let ra = rand::thread_rng().gen_range(0, 9999999);
+        let rs: String = ra.to_owned().to_string();
+        r.push(rs);
+        print!("Trash to: {} -> {}\n", &path.display(), &r.display());
+        fs::rename(&path, &r)
         
     }
 }

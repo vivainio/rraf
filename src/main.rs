@@ -25,6 +25,7 @@ extern crate getopts;
 extern crate glob;
 extern crate walkdir;
 extern crate core;
+extern crate rand;
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -178,11 +179,17 @@ fn nuke_tree(root: &str) -> bool {
 }
 
 fn handle_gitignore() {
+    
+    env::set_current_dir("c:/r/1");
     let mut ls = git_ignored_dirs("c:/r/1");
     ls.retain(|l| l.ends_with("/"));
     ls.sort_by_key(|k| k.len());
+    let trash = Trash::new();
+    
     for l in ls {
         print!("Line {}\n", l);
+        let p = Path::new(&l);
+        trash.move_path(&p).expect("Could not move path");
     }
     
 }
